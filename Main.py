@@ -10,7 +10,7 @@ def get_file_from_folder(folder_path):
     for file in files:
       file_path = os.path.join(root, file) # path.join 将目录和文件名组合成路径
       paths.append(file_path)
-  print ("总共",len(paths),"个文件")
+  #print ("总共",len(paths),"个文件")
   return paths
 
 # 3.分词
@@ -55,7 +55,7 @@ def read_files(paths):
     for index,path in enumerate(paths):
         words = read_file(path)
         world_words.extend(words)
-    print ("分词over")
+    #print ("分词over")
     return world_words
 
 # 4.统计词频
@@ -91,13 +91,12 @@ def rate_statistics(items_list,total_num,rate_on):
             break
         curr_percent_str = '%0.3f' % (curr_percent)
         final_list.append([item[1],str(item[0]),curr_percent_str,''])  # 单词-词频-百分比
-    print ('排序over')
+    #print ('排序over')
     return final_list
 
 # 7.添加释义    # Todo:网络查词
 ## 7.1读取词典
-def read_dict(dict_path):
-    dicts = {}
+def read_dict(dict_path,dicts):
     f = codecs.open(dict_path, 'r')
     lines = f.readlines()
     for line in lines:
@@ -106,7 +105,14 @@ def read_dict(dict_path):
         word = list[0]
         value = list[1]
         dicts[word] = value
-    print("已获取", len(dicts.keys()), '个单词释义')
+    return dicts
+
+def read_dicts_from_folder(folder):
+    dict_paths = get_file_from_folder(folder)
+    dicts = {}
+    for dict_path in dict_paths:
+        dicts = read_dict(dict_path,dicts)
+    #print("已获取", len(dicts.keys()), '个单词释义')
     return dicts
 
 # 7.2 添加释义
@@ -148,8 +154,7 @@ def main():
     word_list = rate_statistics(word_list,total_num, rate_on)  #6.百分比统计  True-按百分比
     print_to_csv(word_list, 'output\\all.csv')
 
-    dict_path = get_file_from_folder('buildin_dicts')   # Todo:改成多字典
-    dicts = read_dict(dict_path[0])    #7.1读取词典
+    dicts = read_dicts_from_folder('buildin_dicts')    #7.1读取词典
     found_words, notfound_words = add_meaning(word_list,dicts) # 7.2 生成单词释义
 
     print_to_csv(found_words, 'output\\found.csv')

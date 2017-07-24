@@ -33,7 +33,7 @@ def get_dict(filename):
             word = list[0]
             value = get_alph(list[1])
             if len(word)<2 or len(value) <2 :
-                raise Exception
+                continue
             dicts[word] = value
         except:
             print (filename,"本行读取错误:",line)
