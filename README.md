@@ -20,7 +20,7 @@ coding in python3.6
 
 - 需修改分词部分的代码
 
-- 将新词典放至**new_dicts**，运行后会在**buildin_dicts**生成Main.py所需格式的词典
+- 将新词典(utf-8)放至**new_dicts**，运行后会在**buildin_dicts**生成Main.py所需格式的词典
 
 ## Todo
 

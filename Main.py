@@ -10,7 +10,8 @@ def get_file_from_folder(folder_path):
     for file in files:
       file_path = os.path.join(root, file) # path.join 将目录和文件名组合成路径
       paths.append(file_path)
-  #print ("总共",len(paths),"个文件")
+  if show_details:
+    print ("总共",len(paths),"个文件")
   return paths
 
 # 3.分词
@@ -55,7 +56,8 @@ def read_files(paths):
     for index,path in enumerate(paths):
         words = read_file(path)
         world_words.extend(words)
-    #print ("分词over")
+    if show_details:
+        print ("分词over,总共",len(world_words),'个单词')
     return world_words
 
 # 4.统计词频
@@ -66,6 +68,7 @@ def statictics_words(words):
       s_dict[word] = s_dict[word] + 1
     else:
       s_dict[word] = 1
+  print ("统计词频over.共",len(s_dict.keys()),'个不重复单词')
   return s_dict
 
 # 5.排序
@@ -91,7 +94,8 @@ def rate_statistics(items_list,total_num,rate_on):
             break
         curr_percent_str = '%0.3f' % (curr_percent)
         final_list.append([item[1],str(item[0]),curr_percent_str,''])  # 单词-词频-百分比
-    #print ('排序over')
+    if show_details:
+        print ('排序over')
     return final_list
 
 # 7.添加释义    # Todo:网络查词
@@ -112,7 +116,7 @@ def read_dicts_from_folder(folder):
     dicts = {}
     for dict_path in dict_paths:
         dicts = read_dict(dict_path,dicts)
-    #print("已获取", len(dicts.keys()), '个单词释义')
+    print("已获取", len(dicts.keys()), '个单词释义')
     return dicts
 
 # 7.2 添加释义
@@ -126,6 +130,8 @@ def add_meaning(final_list,dicts):
             found_words.append(item)
         else:
             notfound_words.append(item)
+    if show_details:
+        print ("有释义的单词",len(found_words),'个')
     return found_words,notfound_words
 
 # 8.输出csv
@@ -163,8 +169,9 @@ def main():
 
 if __name__ == "__main__":
     # 将需修改的参数放至此处 方便修改
-    rate_on = False  # 筛选百分比开关
-    rate = [40,70]  # 百分比始末
+    show_details = True # 显示调试信息
+    rate_on = True  # 筛选百分比开关
+    rate = [50,70]  # 百分比始末
     show_statistics = True  # 显示词频&百分比
     eachday_recite_num = 20 # 每天背单词数
     main()

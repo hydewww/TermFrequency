@@ -28,10 +28,12 @@ def get_dict(filename):
     for line in lines:  # Todo:不同字典文件 分法不同
         try:
             line = line.strip()
-            line = get_alph(line)
-            list = line.split("  ",1)
+            line = line.replace("，",' ')    #防止输出excel时的bug
+            #line = get_alph(line)
+            list = line.split("\t",1)
             word = list[0]
-            value = get_alph(list[1])
+            #value = get_alph(list[1])
+            value = list[1]
             if len(word)<2 or len(value) <2 :
                 continue
             dicts[word] = value
@@ -58,7 +60,7 @@ def generate_dicts(filename,dicts):
         try:
             nfile.write("%s_____%s\n" % (key,value))    #用_____分隔
         except:
-            print (key,value)
+            print ('写入失败',key,value)
     nfile.close()
     print ("已生成",filename)
 
@@ -85,6 +87,6 @@ def test(dict_path):
 
 
 if __name__ == '__main__':
-    Delete_On = True # 读取后自动删除
+    Delete_On = False # 读取后自动删除
     main()
     #test('buildin_dicts\\liuji.txt')
