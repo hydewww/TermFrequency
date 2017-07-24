@@ -1,6 +1,6 @@
 # 词频分析
 
-coding in python3.6
+```coding in python3.6```
 
 为摆脱无脑谷歌翻译而诞生的程序，希望能帮助自己啃下绝望的众英文文档。
 
@@ -12,7 +12,7 @@ coding in python3.6
 
 1. 读取**text**文件夹中文档(utf-8)，统计词频并排序，筛选某比例内(50%-70%)的词汇，输出至**all.csv**
 
-2. 读取**buildin_dicts**文件夹中字典(现为六级词汇)，筛选出1中有的单词并添加释义，输出**found.csv** **notfound.csv**
+2. 读取**buildin_dicts**文件夹中字典(现为六级词汇+牛津词典)，筛选出1中有的单词并添加释义，输出**found.csv** **notfound.csv** (Tips：只选六级词汇，found里就只会有简单的词汇
 
 - 代码末尾有可改变的参数
 
@@ -24,4 +24,4 @@ coding in python3.6
 
 ## Todo
 
-- 网络查词
+- 导入Anki
