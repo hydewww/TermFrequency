@@ -71,21 +71,31 @@ def statictics_words(words):
   print ("统计词频over.共",len(s_dict.keys()),'个不重复单词')
   return s_dict
 
+
+## 5.5 转换
+def list_to_dict(wlist):
+    wdict = {}
+    for item in wlist:
+        wdict[item[0]] = item[1:]
+    return wdict
+
 # 5.排序
 def sort_by_value(word_dict):
-  items = word_dict.items()     # 返回(key,value)的list
-  item_list = [[it[1], it[0]] for it in items]  # key,value换位
+  item_list = word_dict.items()     # 返回(key,value)的list
+  item_list = [[it[1], it[0]] for it in item_list]  # key,value换位
   item_list.sort(reverse=True)  # reverse降序排序
-  return item_list
+  item_list = [[it[1], it[0]] for it in item_list]  # key,value换位
+  item_dict = list_to_dict(item_list)
+  return item_dict
 
 # 6.百分比统计
-def rate_statistics(items_list,total_num,rate_on):
+def rate_statistics(items_Dict,total_num,rate_on):
     rate_begin,rate_end = 0, 100
     if rate_on:
         rate_begin , rate_end = rate[0],rate[1]
-    final_list = []
+    final_Dict = {}
     curr_total = 0
-    for item in items_list:
+    for word,item in items_Dict.items():
         curr_total = curr_total + item[0]
         curr_percent = (float(curr_total) / total_num) * 100
         if curr_percent<rate_begin:
@@ -93,12 +103,12 @@ def rate_statistics(items_list,total_num,rate_on):
         if curr_percent>rate_end:
             break
         curr_percent_str = '%0.3f' % (curr_percent)
-        final_list.append([item[1],str(item[0]),curr_percent_str,''])  # 单词-词频-百分比
+        final_Dict[word] = [str(item[0]),curr_percent_str,'']  # value:词频-百分比-释义
     if show_details:
         print ('排序over')
-    return final_list
+    return final_Dict
 
-# 7.添加释义    # Todo:网络查词
+# 7.添加释义
 ## 7.1读取词典
 def read_dict(dict_path,dicts):
     f = codecs.open(dict_path, 'r')
@@ -120,31 +130,60 @@ def read_dicts_from_folder(folder):
     return dicts
 
 # 7.2 添加释义
-def add_meaning(final_list,dicts):
-    found_words = []
-    notfound_words = []
-    for item in final_list:
-        word = item[0]
+def add_meaning(final_dict,dicts):
+    found_words = {}
+    notfound_words = {}
+    for word,value in final_dict.items():
         if word in dicts.keys():
-            item[3]=dicts[word]
-            found_words.append(item)
+            value[2] = dicts[word]
+            found_words[word] = value
         else:
-            notfound_words.append(item)
+            notfound_words[word] = value
     if show_details:
         print ("有释义的单词",len(found_words),'个')
     return found_words,notfound_words
 
 # 8.输出csv
-def print_to_csv(word_list, to_file_path):
+def print_to_csv(word_Dict, filename):
+    to_file_path = os.path.join('output', filename)
     nfile = open(to_file_path,'w+')
-    if show_statistics:
-        for item in word_list:
-            nfile.write("%s,%s,%s,%s\n" % (item[0], item[1],item[2],item[3]))
-    else :
-        for item in word_list:
-            nfile.write("%s,%s\n" % (item[0], item[3]))
+    for word, item in word_Dict.items():
+        if show_statistics:
+            nfile.write("%s,%s,%s,%s\n" % (word,item[0], item[1],item[2]))
+        else :
+            nfile.write("%s,%s\n" % (word, item[2]))
     nfile.close()
     print ("输出文件",to_file_path)
+
+# 9.筛选词汇
+# 9.1
+def clear_words(wordDict,clearlist):
+    for cword in clearlist:
+        if cword in wordDict.keys():
+            del wordDict[cword]
+    print ('已去除已掌握单词')
+    return wordDict
+
+# 9.2 读单文件
+def read_clearlist(clear_path):
+    clearlist = []
+    f = codecs.open(clear_path, 'r')
+    lines = f.readlines()
+    for line in lines:
+        line = line.strip()
+        clearlist.append(line)
+    return clearlist
+
+# 9.3 整合多文件
+def read_clearlist_from_folder(folder):
+    clear_paths = get_file_from_folder(folder)
+    clearlists = []
+    for clear_path in clear_paths:
+        clearlist = read_clearlist(clear_path)
+        clearlists.extend(clearlist)
+    if show_details:
+        print("共有", len(clearlists), '个已掌握单词')
+    return clearlists
 
 def main():
     # words = read_file('data1/dt01.txt')
@@ -155,22 +194,28 @@ def main():
     total_num = len(words)
     word_dict = statictics_words(words)   #4.统计词频
 
-    word_list = sort_by_value(word_dict) #5.排序
+    word_dict = sort_by_value(word_dict) #5.排序
 
-    word_list = rate_statistics(word_list,total_num, rate_on)  #6.百分比统计  True-按百分比
-    print_to_csv(word_list, 'output\\all.csv')
 
-    dicts = read_dicts_from_folder('buildin_dicts')    #7.1读取词典
-    found_words, notfound_words = add_meaning(word_list,dicts) # 7.2 生成单词释义
+    word_dict = rate_statistics(word_dict,total_num, rate_on)
+    if show_details:
+        print_to_csv(word_dict, 'before_clear.csv')  #6.百分比统计  True-按百分比
 
-    print_to_csv(found_words, 'output\\found.csv')
-    print_to_csv(notfound_words, 'output\\notfound.csv') # 8.输出至文档
+    clearlists = read_clearlist_from_folder('clear_lists')
+    word_dict = clear_words(word_dict,clearlists)
+    if show_details:
+        print_to_csv(word_dict, 'after_clear.csv')  # 9. 筛选已掌握单词
 
+    Real_dicts = read_dicts_from_folder('buildin_dicts')    #7.1读取词典
+    found_words, notfound_words = add_meaning(word_dict,Real_dicts) # 7.2 生成单词释义
+
+    print_to_csv(found_words, 'found.csv')
+    print_to_csv(notfound_words, 'notfound.csv') # 8.输出至文档
 
 if __name__ == "__main__":
     # 将需修改的参数放至此处 方便修改
     show_details = True # 显示调试信息
-    rate_on = True  # 筛选百分比开关
+    rate_on = False  # 筛选百分比开关
     rate = [50,70]  # 百分比始末
     show_statistics = True  # 显示词频&百分比
     eachday_recite_num = 20 # 每天背单词数
