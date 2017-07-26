@@ -36,6 +36,15 @@
 
 - Tips:若```buildin_dicts```只有中高考/四六级词汇，输出的就是文本中考纲范围内的单词
 
+### 导入至anki
+
+anki是本人强推的背诵软件，各平台均有客户端，官网:https://apps.ankiweb.net/index.html
+
+点击```导入文件```选中```anki.txt```即可导入，记忆库中不会添加重复项。
+
+关于anki的各种奇技淫巧可关注知乎专栏:https://apps.ankiweb.net/index.html
+
+
 ## Todo
 
-- 抓取文本的爬虫
+- 用爬虫抓取文本

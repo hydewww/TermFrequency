@@ -108,8 +108,38 @@ def rate_statistics(items_Dict,total_num,rate_on):
         print ('排序over')
     return final_Dict
 
-# 7.添加释义
-## 7.1读取词典
+# 7.筛选词汇
+# 7.1
+def clear_words(wordDict,clearlist):
+    for cword in clearlist:
+        if cword in wordDict.keys():
+            del wordDict[cword]
+    print ('已去除已掌握单词')
+    return wordDict
+
+# 7.2 读单文件
+def read_clearlist(clear_path):
+    clearlist = []
+    f = codecs.open(clear_path, 'r')
+    lines = f.readlines()
+    for line in lines:
+        line = line.strip()
+        clearlist.append(line)
+    return clearlist
+
+# 7.3 整合多文件
+def read_clearlist_from_folder(folder):
+    clear_paths = get_file_from_folder(folder)
+    clearlists = []
+    for clear_path in clear_paths:
+        clearlist = read_clearlist(clear_path)
+        clearlists.extend(clearlist)
+    if show_details:
+        print("共有", len(clearlists), '个已掌握单词')
+    return clearlists
+
+# 8.添加释义
+## 8.1读取词典
 def read_dict(dict_path,dicts):
     f = codecs.open(dict_path, 'r')
     lines = f.readlines()
@@ -129,7 +159,7 @@ def read_dicts_from_folder(folder):
     print("已获取", len(dicts.keys()), '个单词释义')
     return dicts
 
-# 7.2 添加释义
+# 8.2 添加释义
 def add_meaning(final_dict,dicts):
     found_words = {}
     notfound_words = {}
@@ -143,10 +173,10 @@ def add_meaning(final_dict,dicts):
         print ("有释义的单词",len(found_words),'个')
     return found_words,notfound_words
 
-# 8.输出csv
+# 9.输出csv
 def print_to_csv(word_Dict, filename):
     to_file_path = os.path.join('output', filename)
-    nfile = open(to_file_path,'w+')
+    nfile = codecs.open(to_file_path,'w+')
     for word, item in word_Dict.items():
         if show_statistics:
             nfile.write("%s,%s,%s,%s\n" % (word,item[0], item[1],item[2]))
@@ -155,35 +185,14 @@ def print_to_csv(word_Dict, filename):
     nfile.close()
     print ("输出文件",to_file_path)
 
-# 9.筛选词汇
-# 9.1
-def clear_words(wordDict,clearlist):
-    for cword in clearlist:
-        if cword in wordDict.keys():
-            del wordDict[cword]
-    print ('已去除已掌握单词')
-    return wordDict
-
-# 9.2 读单文件
-def read_clearlist(clear_path):
-    clearlist = []
-    f = codecs.open(clear_path, 'r')
-    lines = f.readlines()
-    for line in lines:
-        line = line.strip()
-        clearlist.append(line)
-    return clearlist
-
-# 9.3 整合多文件
-def read_clearlist_from_folder(folder):
-    clear_paths = get_file_from_folder(folder)
-    clearlists = []
-    for clear_path in clear_paths:
-        clearlist = read_clearlist(clear_path)
-        clearlists.extend(clearlist)
-    if show_details:
-        print("共有", len(clearlists), '个已掌握单词')
-    return clearlists
+# 9.2 输出anki导入文件
+def print_to_anki(word_Dict, filename):
+    to_file_path = os.path.join('output', filename)
+    nfile = codecs.open(to_file_path,'w+','utf-8')
+    for word, item in word_Dict.items():
+        nfile.write("%s\t%s\r\n" % (word, item[2]))
+    nfile.close()
+    print ("输出文件",to_file_path)
 
 def main():
     # words = read_file('data1/dt01.txt')
@@ -204,13 +213,15 @@ def main():
     clearlists = read_clearlist_from_folder('clear_lists')
     word_dict = clear_words(word_dict,clearlists)
     if show_details:
-        print_to_csv(word_dict, 'after_clear.csv')  # 9. 筛选已掌握单词
+        print_to_csv(word_dict, 'after_clear.csv')  # 7. 筛选已掌握单词
 
-    Real_dicts = read_dicts_from_folder('buildin_dicts')    #7.1读取词典
-    found_words, notfound_words = add_meaning(word_dict,Real_dicts) # 7.2 生成单词释义
+    Real_dicts = read_dicts_from_folder('buildin_dicts')    #8.1读取词典
+    found_words, notfound_words = add_meaning(word_dict,Real_dicts) # 8.2 生成单词释义
 
     print_to_csv(found_words, 'found.csv')
-    print_to_csv(notfound_words, 'notfound.csv') # 8.输出至文档
+    print_to_csv(notfound_words, 'notfound.csv') # 9.输出至文档
+
+    print_to_anki(found_words,'anki.txt')   #9.2输出anki导入文件
 
 if __name__ == "__main__":
     # 将需修改的参数放至此处 方便修改

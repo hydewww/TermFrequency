@@ -1,7 +1,7 @@
 .idea/
-test/
-text/
-new_dicts/
-builin_dicts/
-output/
+/test/
+/text/
+/new_dicts/
+/builin_dicts/
+/output/
 /clear_lists/
