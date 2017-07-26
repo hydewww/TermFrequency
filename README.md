@@ -6,7 +6,7 @@
 
 ## 用法
 
-- **程序所需文件夹需先行创建**
+- **程序所需文件夹需先行创建**，可复制```example```中文件进行测试
 
 - 用户添加的文件最好存为utf-8格式，可参考```example```中文件
 
@@ -42,7 +42,7 @@ anki是本人强推的背诵软件，各平台均有客户端，官网:https://a
 
 点击```导入文件```选中```anki.txt```即可导入，记忆库中不会添加重复项。
 
-关于anki的各种奇技淫巧可关注知乎专栏:https://apps.ankiweb.net/index.html
+关于anki的各种奇技淫巧可关注anki的知乎专栏:https://zhuanlan.zhihu.com/-anki
 
 
 ## Todo
