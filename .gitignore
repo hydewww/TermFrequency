@@ -2,4 +2,6 @@
 test/
 text/
 new_dicts/
+builin_dicts/
 output/
+/clear_lists/
